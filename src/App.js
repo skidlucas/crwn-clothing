@@ -14,6 +14,11 @@ import { auth, createUserProfileDocument } from './firebase/firebase.utils';
 import { setCurrentUser } from './redux/user/user.actions';
 import { createStructuredSelector } from 'reselect';
 
+import {Elements} from '@stripe/react-stripe-js';
+import {loadStripe} from '@stripe/stripe-js';
+
+const stripePromise = loadStripe('pk_test_51HZxIlFf9GBKRaZ6kZUDfWCh5UJUo6afhUFhueekiNojPImca6HerzjXPxXiJExSt71lFz6Z4GEbqWQmbg0jvqwa00TOD2PIuq');
+
 class App extends React.Component {
   unsubscribeFromAuth = null;
 
@@ -43,14 +48,16 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <Header/>
-        <Switch>
-          <Route exact path='/' component={HomePage}/>
-          <Route path='/shop' component={ShopPage}/>
-          <Route exact path='/checkout' component={CheckoutPage}/>
-          <Route exact path='/signin'
-                 render={() => this.props.currentUser ? <Redirect to='/'/> : <SignInAndSignUpPage/>}/>
-        </Switch>
+        <Elements stripe={stripePromise}>
+          <Header/>
+          <Switch>
+            <Route exact path='/' component={HomePage}/>
+            <Route path='/shop' component={ShopPage}/>
+            <Route exact path='/checkout' component={CheckoutPage}/>
+            <Route exact path='/signin'
+                   render={() => this.props.currentUser ? <Redirect to='/'/> : <SignInAndSignUpPage/>}/>
+          </Switch>
+        </Elements>
       </div>
     );
   }
