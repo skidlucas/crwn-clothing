@@ -4,7 +4,7 @@ import './stripe-button.styles.scss';
 import CustomButton from '../custom-button/custom-button.component';
 
 const StripeCheckoutButton = ({ price }) => {
-  const priceForStripe = price * 100;
+  // const priceForStripe = price * 100;
 
   const stripe = useStripe();
   const elements = useElements();
