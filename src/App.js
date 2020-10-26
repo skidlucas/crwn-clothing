@@ -14,8 +14,8 @@ import { auth, createUserProfileDocument } from './firebase/firebase.utils';
 import { setCurrentUser } from './redux/user/user.actions';
 import { createStructuredSelector } from 'reselect';
 
-import {Elements} from '@stripe/react-stripe-js';
-import {loadStripe} from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
 import { selectCurrentUser } from './redux/user/user.selectors';
 
 const stripePromise = loadStripe('pk_test_51HZxIlFf9GBKRaZ6kZUDfWCh5UJUo6afhUFhueekiNojPImca6HerzjXPxXiJExSt71lFz6Z4GEbqWQmbg0jvqwa00TOD2PIuq');
