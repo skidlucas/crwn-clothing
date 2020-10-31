@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { connect } from 'react-redux';
 import './App.css';
@@ -19,36 +19,28 @@ import { checkUserSession } from './redux/user/user.actions';
 
 const stripePromise = loadStripe('pk_test_51HZxIlFf9GBKRaZ6kZUDfWCh5UJUo6afhUFhueekiNojPImca6HerzjXPxXiJExSt71lFz6Z4GEbqWQmbg0jvqwa00TOD2PIuq');
 
-class App extends React.Component {
-  unsubscribeFromAuth = null;
+const App = ({ checkUserSession, currentUser }) => {
 
-  componentDidMount() {
-    const { checkUserSession } = this.props;
+  useEffect(() => {
     checkUserSession();
-  }
+  }, [checkUserSession]);
 
-  componentWillUnmount() {
-    this.unsubscribeFromAuth();
-  }
+  return (
+    <div>
+      <Elements stripe={stripePromise}>
+        <Header/>
+        <Switch>
+          <Route exact path='/' component={HomePage}/>
+          <Route path='/shop' component={ShopPage}/>
+          <Route exact path='/checkout' component={CheckoutPage}/>
+          <Route exact path='/signin'
+                 render={() => currentUser ? <Redirect to='/'/> : <SignInAndSignUpPage/>}/>
+        </Switch>
+      </Elements>
+    </div>
+  );
 
-  render() {
-    return (
-      <div>
-        <Elements stripe={stripePromise}>
-          <Header/>
-          <Switch>
-            <Route exact path='/' component={HomePage}/>
-            <Route path='/shop' component={ShopPage}/>
-            <Route exact path='/checkout' component={CheckoutPage}/>
-            <Route exact path='/signin'
-                   render={() => this.props.currentUser ? <Redirect to='/'/> : <SignInAndSignUpPage/>}/>
-          </Switch>
-        </Elements>
-      </div>
-    );
-  }
-
-}
+};
 
 const mapStateToProps = createStructuredSelector({
   currentUser: selectCurrentUser
