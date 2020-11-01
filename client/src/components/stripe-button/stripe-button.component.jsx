@@ -1,10 +1,11 @@
 import React from 'react';
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
+import axios from 'axios';
 import './stripe-button.styles.scss';
 import CustomButton from '../custom-button/custom-button.component';
 
 const StripeCheckoutButton = ({ price }) => {
-  // const priceForStripe = price * 100;
+  const priceForStripe = price * 100;
 
   const stripe = useStripe();
   const elements = useElements();
@@ -25,7 +26,7 @@ const StripeCheckoutButton = ({ price }) => {
     const cardElement = elements.getElement(CardElement);
 
     // Use your card Element with other Stripe.js APIs
-    const {error, paymentMethod} = await stripe.createPaymentMethod({
+    const { error, paymentMethod } = await stripe.createPaymentMethod({
       type: 'card',
       card: cardElement,
     });
@@ -33,7 +34,20 @@ const StripeCheckoutButton = ({ price }) => {
     if (error) {
       console.log('[error]', error);
     } else {
-      console.log('[PaymentMethod]', paymentMethod);
+      const response = await axios.post('payment', { amount: priceForStripe, paymentMethod });
+      const {client_secret: clientSecret} = response.data;
+
+      const result = await stripe.confirmCardPayment(clientSecret);
+
+      if (result.error) {
+        // Show error to your customer (e.g., insufficient funds)
+        console.log(result.error.message);
+      } else {
+        // The payment has been processed!
+        if (result.paymentIntent.status === 'succeeded') {
+          alert('Payment successful');
+        }
+      }
     }
   };
 
@@ -46,7 +60,7 @@ const StripeCheckoutButton = ({ price }) => {
         Pay
       </CustomButton>
     </form>
-  )
+  );
 };
 
 export default StripeCheckoutButton;
